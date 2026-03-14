@@ -1,7 +1,7 @@
 const CACHE_NAME = 'todo-v1';
 const ASSETS_TO_CACHE = [
   './',                       // this will usually serve to-do.html
-  './to-do.html',
+  './index.html',
   './Neue-Roman.otf',
   './Coolvetica Rg.otf'
   // No need to list CSS/JS separately – they are inside the HTML file
