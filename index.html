@@ -71,7 +71,7 @@
             text-align: center;
         }
 
-        /* ===== DAY PICKER – bubble removed ===== */
+        /* ===== DAY PICKER ===== */
         .day-picker {
             display: flex;
             align-items: center;
@@ -81,7 +81,6 @@
             width: fit-content;
             margin-left: auto;
             margin-right: auto;
-            /* no background, border, or padding */
         }
 
         .day-picker label {
@@ -131,7 +130,7 @@
         }
 
         th {
-            text-align: center;
+            text-align: left;
             padding: 0 0.8rem 0.8rem 0.8rem;
             font-family: 'Coolvetica', sans-serif;
             font-weight: 400;
@@ -142,34 +141,45 @@
             border-bottom: 2px dashed #2c3a4a;
         }
 
-        /* Task column (first) */
-        th:first-child, td:first-child {
-            text-align: left;
-        }
-
-        /* Time column (second) */
-        th:last-child, td:last-child {
+        /* Checkbox column */
+        th:first-child {
+            width: 40px;
             text-align: center;
         }
 
         td {
-            padding: 1.1rem 1.2rem;
+            padding: 1.1rem 0.8rem;
             border-radius: 24px !important;
             border: 1px solid #3a3a55;
         }
 
-        /* Task cells keep their background bubble */
-        td:first-child {
+        /* Task cells keep their background bubble (first and second columns) */
+        td:not(:last-child) {
             background: #2a2a3a;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
 
-        /* Time cells have no background bubble */
+        /* Time cells have no background bubble (third column) */
         td:last-child {
             background: transparent;
             border: none;
             box-shadow: none;
-            padding: 0.6rem 0.5rem;  /* adjust to vertically align badge with task bubble */
+            padding: 0.6rem 0.5rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* Checkbox styling */
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #7a9ac0;  /* matches your accent color */
+            background-color: #1e1e2f;
+            border: 1px solid #5a6e8a;
+            border-radius: 6px;
+            display: block;
+            margin: 0 auto;
         }
 
         /* Task name styling */
@@ -189,7 +199,7 @@
             color: transparent;
         }
 
-        /* ===== TIME BADGES – brighter pills ===== */
+        /* ===== TIME BADGES ===== */
         .time-badge {
             background: #3a4a60;
             color: #ffffff;
@@ -213,10 +223,18 @@
         }
 
         /* ===== TOTAL ROW ===== */
-        .total-row td:first-child {
+        .total-row td:first-child,
+        .total-row td:nth-child(2) {
             background: #222236;
             border: 1px solid #4a4a6a;
             box-shadow: 0 8px 18px -6px black;
+        }
+
+        .total-row td:first-child {
+            text-align: center;
+        }
+
+        .total-row td:nth-child(2) {
             font-family: 'Coolvetica', sans-serif;
             font-size: 1.2rem;
             letter-spacing: 0.5px;
@@ -290,11 +308,15 @@
                 padding-bottom: 0.4rem;
             }
             td {
-                padding: 0.9rem 0.8rem;
+                padding: 0.9rem 0.5rem;
                 font-size: 0.95rem;
             }
             td:last-child {
                 padding: 0.5rem 0.3rem;
+            }
+            .task-checkbox {
+                width: 20px;
+                height: 20px;
             }
             .time-badge {
                 padding: 0.3rem 0.8rem;
@@ -316,7 +338,10 @@
                 font-size: 1.9rem;
             }
             td:first-child {
-                padding: 0.7rem 0.5rem;
+                padding: 0.7rem 0.3rem;
+            }
+            td:nth-child(2) {
+                padding: 0.7rem 0.3rem;
                 font-size: 0.9rem;
             }
             .task-name {
@@ -347,7 +372,11 @@
 
     <table id="todoTable">
         <thead>
-            <tr><th>Task</th><th>Time</th></tr>
+            <tr>
+                <th>✓</th>
+                <th>Task</th>
+                <th>Time</th>
+            </tr>
         </thead>
         <tbody id="tableBody">
             <!-- filled by JavaScript -->
@@ -407,6 +436,7 @@
 
             // 1) Dynamic task row
             html += `<tr>
+                <td><input type="checkbox" class="task-checkbox"></td>
                 <td class="task-name">${dynamicDescriptions[dayNum]}</td>
                 <td><span class="time-badge">${times[0]} min</span></td>
             </tr>`;
@@ -414,14 +444,16 @@
             // 2) Fixed tasks with their times
             for (let i = 0; i < fixedTasks.length; i++) {
                 html += `<tr>
+                    <td><input type="checkbox" class="task-checkbox"></td>
                     <td class="task-name">${fixedTasks[i]}</td>
                     <td><span class="time-badge">${times[i+1]} min</span></td>
                 </tr>`;
             }
 
-            // 3) Total row (sum of all four times)
+            // 3) Total row (sum of all four times) – no checkbox
             const total = times.reduce((acc, val) => acc + val, 0);
             html += `<tr class="total-row">
+                <td></td>
                 <td>🧾 Total time</td>
                 <td><span class="time-badge total-number">${total} min</span></td>
             </tr>`;
