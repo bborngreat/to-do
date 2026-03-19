@@ -426,6 +426,21 @@
         const selectEl = document.getElementById('daySelect');
         const tbody = document.getElementById('tableBody');
 
+        // ----- localStorage key -----
+        const STORAGE_KEY = 'selectedDay';
+
+        // ----- get saved day or default to 7 (Sunday) -----
+        function getSavedDay() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            // Return saved day if it exists and is valid, otherwise return 7
+            return (saved && timesByDay[parseInt(saved, 10)]) ? parseInt(saved, 10) : 7;
+        }
+
+        // ----- save selected day to localStorage -----
+        function saveDay(day) {
+            localStorage.setItem(STORAGE_KEY, day);
+        }
+
         // ----- render table based on selected day -----
         function renderTable(day) {
             const dayNum = parseInt(day, 10);
@@ -459,14 +474,38 @@
             </tr>`;
 
             tbody.innerHTML = html;
+            
+            // Update select element to match the current day
+            selectEl.value = dayNum;
         }
 
-        // initial render (default Sunday = 7)
-        renderTable(7);
+        // ----- initialize with saved day -----
+        const initialDay = getSavedDay();
+        
+        // Set the select element to the saved day
+        selectEl.value = initialDay;
+        
+        // Render the table with the saved day
+        renderTable(initialDay);
 
-        // update when dropdown changes
+        // ----- update when dropdown changes -----
         selectEl.addEventListener('change', (e) => {
-            renderTable(e.target.value);
+            const selectedDay = e.target.value;
+            saveDay(selectedDay); // Save to localStorage
+            renderTable(selectedDay);
+        });
+
+        // Optional: Add event listener for when the app becomes visible again
+        // This handles cases where the app is in the background and comes back
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                // App became visible again - ensure we're showing the saved day
+                const savedDay = getSavedDay();
+                if (parseInt(selectEl.value, 10) !== savedDay) {
+                    selectEl.value = savedDay;
+                    renderTable(savedDay);
+                }
+            }
         });
     })();
 </script>
